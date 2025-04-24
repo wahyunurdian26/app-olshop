@@ -78,14 +78,14 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { ref } from 'vue'
 import { navigateTo } from 'nuxt/app'
 import { useAuthStore } from '~/stores/auth'
 
-import { useToast } from 'vue-toastification'
+const $toast = useToastSafe()
 
 const auth = useAuthStore()
-const toast = useToast()
+
 
 
 
@@ -98,7 +98,7 @@ const toggleMobileMenu = () => {
 
 const handleLogout = () => {
   auth.logout()
-  toast.success('You have been logged out')
+  $toast.success('You have been logged out')
   navigateTo('/auth')
 }
 </script>
