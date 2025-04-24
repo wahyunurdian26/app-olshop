@@ -72,16 +72,18 @@
       &copy;2025 Campaign App. All rights reserved.
     </p>
   </div>
+
 </template>
 <script setup lang="ts">
-import { useToast } from 'vue-toastification'
+
 import { useRouter } from 'vue-router'
 import { ref } from 'vue'
-import { useAuthStore } from '@/stores/auth' // Asumsi kamu menggunakan Pinia atau Vuex
+import { useAuthStore } from '@/stores/auth' 
+const $toast = useToastSafe()
 
 
 // Toast untuk notifikasi
-const toast = useToast()
+
 const router = useRouter()
 
 // Ref untuk input email dan password
@@ -109,60 +111,52 @@ const handleLogin = async () => {
     })
 
     const data = await res.json()
-    const token = data?.data?.token  // Ambil token dari data.data.token
-    const user = data?.data?.user    // (Opsional) Ambil user info jika dibutuhkan
+    const token = data?.data?.token
+    const user = data?.data?.user
 
     if (res.ok && token) {
       const auth = useAuthStore()
       auth.login(token) // Simpan token dan user di store
 
-      const tokenCookie = useCookie('token')
       tokenCookie.value = token // Simpan token di cookie
 
-      toast.success('Welcome!')
+      $toast.success('Welcome!')
       await router.push('/dashboard')
     } else {
       errorMsg.value = data?.message || 'Login failed. Please try again.'
-      toast.error(errorMsg.value)
+      $toast.error(errorMsg.value)
     }
   } catch (err) {
     console.error(err)
     errorMsg.value = 'An error occurred. Please try again.'
-    toast.error(errorMsg.value)
+    $toast.error(errorMsg.value)
   }
 }
-
 
 // Fungsi untuk login dengan Google
 const loginWithGoogle = async () => {
   try {
-    // Arahkan pengguna ke endpoint login Google di backend
     const res = await fetch(`${useRuntimeConfig().public.apiBase}/auth/google`, {
       method: 'GET',
     })
 
     if (!res.ok) {
-      // Menangani error jika response tidak OK
-      toast.error('Failed to initiate Google login.')
+      $toast.error('Failed to initiate Google login.')
       console.error('Error:', res.status, res.statusText)
       return
     }
 
     const data = await res.json()
-    console.log('Received data:', data) // Cek data yang diterima
+    console.log('Received data:', data)
 
     if (data?.data?.url) {
-      // Redirect ke halaman login Google
       window.location.href = data.data.url
     } else {
-      toast.error('No redirect URL found.')
+      $toast.error('No redirect URL found.')
     }
   } catch (err) {
     console.error('An error occurred during Google login:', err)
-    toast.error('An error occurred during Google login.')
+    $toast.error('An error occurred during Google login.')
   }
 }
-
-
-
 </script>

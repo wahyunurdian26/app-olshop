@@ -1,4 +1,4 @@
-import Toast, * as ToastModule from 'vue-toastification'
+import Toast, { useToast } from 'vue-toastification'
 import 'vue-toastification/dist/index.css'
 
 export default defineNuxtPlugin((nuxtApp) => {
@@ -12,9 +12,12 @@ export default defineNuxtPlugin((nuxtApp) => {
 
   nuxtApp.vueApp.use(Toast, options)
 
+  // Ini yang benar:
+  const toast = useToast()
+
   return {
     provide: {
-      useToast: ToastModule.useToast
+      toast,
     }
   }
 })
